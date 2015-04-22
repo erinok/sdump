@@ -58,7 +58,6 @@ func main() {
 	if len(os.Args) >= 3 {
 		outdir = os.Args[2]
 	}
-	// fmt.Println(db, outdir)
 	if err := os.MkdirAll(outdir, os.ModeDir|os.ModePerm); err != nil {
 		fatal("could not create directory", outdir, " --", err)
 	}
@@ -72,13 +71,16 @@ func main() {
 	for _, table := range tables {
 		var err error
 		outfname := outdir + "/" + table + ".txt"
-		cmd := exec.Command(sqlite3, "-header", db.Fname())
-		cmd.Stdin = strings.NewReader(".mode tabs\n" + "select * from " + table + "\n")
-		if cmd.Stdout, err = os.Create(outfname); err != nil {
+		outf, err := os.Create(outfname)
+		if err != nil {
 			fatal("could not create output file", outfname, err)
 		}
+		cmd := exec.Command(sqlite3, "-header", db.Fname())
+		cmd.Stdin = strings.NewReader(".mode tabs\n" + "SELECT * FROM " + table + ";\n")
+		cmd.Stdout = outf
 		if err = cmd.Run(); err != nil {
 			fatal("error dumping table", table, err)
 		}
+		fmt.Println(outfname)
 	}
 }
