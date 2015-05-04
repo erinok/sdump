@@ -70,7 +70,7 @@ func main() {
 	}
 	for _, table := range tables {
 		var err error
-		outfname := outdir + "/" + table + ".txt"
+		outfname := outdir + "/" + table + ".tsv"
 		outf, err := os.Create(outfname)
 		if err != nil {
 			fatal("could not create output file", outfname, err)
